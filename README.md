@@ -1,15 +1,5 @@
-# 🚀 Welcome to your new awesome project!
+# 🚀 Rss aggregator
 
-This project has been created using **webpack-cli**, you can now run
+https://rss-agregator-two.vercel.app/
 
-```
-npm run build
-```
-
-or
-
-```
-yarn build
-```
-
-to bundle your application
+[![Maintainability](https://api.codeclimate.com/v1/badges/fc87e021f194d4ff1486/maintainability)](https://codeclimate.com/github/nvekay/frontend-project-11/maintainability)  [![Actions Status](https://github.com/nvekay/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/nvekay/frontend-project-11/actions)

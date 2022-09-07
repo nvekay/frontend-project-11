@@ -15,21 +15,24 @@ export default () => {
       processState: 'filling',
       url: '',
       feeds: [],
-      errors: [],
+      errors: {},
     },
   };
 
-  const watchedState = onChange(state, (path, value, error) => {
+  const watchedState = onChange(state, (path, error) => {
+    console.log(error);
     if (path === 'form.errors') {
-      renderDangerInput(elements, value);
+      renderDangerInput(elements, error);
     }
   });
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     watchedState.form.url = elements.input.value;
-    const validateErrors = validate({ url: watchedState.form.url });
-    watchedState.form.errors = validateErrors;
+    validate({ url: watchedState.form.url })
+      .catch((err) => {
+        watchedState.form.errors = err;
+      });
     console.log(watchedState);
   });
 };

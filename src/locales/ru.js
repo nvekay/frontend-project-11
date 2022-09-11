@@ -2,16 +2,16 @@ import { setLocale } from 'yup';
 
 setLocale({
   mixed: {
-    notOneOf: { key: 'repeatUrl' },
+    notOneOf: { key: 'repeat_url' },
   },
   string: {
-    url: { key: 'validUrl' },
+    url: { key: 'invalid_url' },
   },
 });
 
 export default {
   translation: {
-    validUrl: 'Ссылка должна быть валидным URL',
-    repeatUrl: 'RSS уже существует',
+    invalid_url: 'Ссылка должна быть валидным URL',
+    repeat_url: 'RSS уже существует',
   },
 };

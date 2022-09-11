@@ -6,7 +6,11 @@ const renderDangerInput = (elements, error) => {
 };
 
 export default (state, elements) => onChange(state, (path, error) => {
-  if (path === 'form.errors') {
-    renderDangerInput(elements, error);
+  switch (path) {
+    case 'form.errors':
+      renderDangerInput(elements, error);
+      break;
+    default:
+      break;
   }
 });

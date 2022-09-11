@@ -11,7 +11,7 @@ export default () => {
     resources: {
       ru,
     },
-  }).then((t) => {
+  }).then((i18n) => {
     const elements = {
       form: document.querySelector('#add-url'),
       input: document.querySelector('#url-input'),
@@ -28,12 +28,12 @@ export default () => {
       },
     };
 
-    const makeWatchedState = watchedState(state, elements, t);
+    const makeWatchedState = watchedState(state, elements, i18n);
 
     elements.form.addEventListener('submit', (e) => {
       e.preventDefault();
       makeWatchedState.form.url = elements.input.value;
-      validate({ url: makeWatchedState.form.url }, makeWatchedState, t)
+      validate({ url: makeWatchedState.form.url }, makeWatchedState, i18n)
         .then(() => makeWatchedState.form.feeds.push(makeWatchedState.form.url))
         .catch((err) => {
           makeWatchedState.form.errors = err;

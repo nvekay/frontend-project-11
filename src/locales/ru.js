@@ -13,5 +13,7 @@ export default {
   translation: {
     invalid_url: 'Ссылка должна быть валидным URL',
     repeat_url: 'RSS уже существует',
+    invalid_rss: 'Ресурс не содержит валидный RSS',
+    network_error: 'Ошибка сети',
   },
 };

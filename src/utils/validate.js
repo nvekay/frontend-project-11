@@ -6,8 +6,8 @@ export default (url, state, i18n) => {
   });
   return schema.validate(url)
     .then(() => ({}))
-    .catch((errors) => {
-      const errorMessage = errors.errors.map((err) => i18n(err.key));
+    .catch((err) => {
+      const errorMessage = err.errors.map((errors) => i18n(errors.key));
       throw errorMessage;
     });
 };

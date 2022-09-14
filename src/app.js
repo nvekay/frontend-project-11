@@ -50,7 +50,7 @@ export default () => {
                 try {
                   const dom = domParser(response.data.contents);
                   makeWatchedState.form.feeds.push(dom.feed);
-                  makeWatchedState.form.posts = dom.posts;
+                  makeWatchedState.form.posts = [...makeWatchedState.form.posts, ...dom.posts];
                   makeWatchedState.form.urlContainer.push(makeWatchedState.form.url);
                 } catch (error) {
                   makeWatchedState.form.errors = i18n('parsing_error');

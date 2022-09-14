@@ -18,5 +18,6 @@ export default {
     parsing_error: 'Ошибка парсинга',
     title_feeds: 'Фиды',
     title_posts: 'Посты',
+    button_text: 'Просмотр',
   },
 };

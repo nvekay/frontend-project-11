@@ -1,4 +1,5 @@
 import onChange from 'on-change';
+import { isEmpty } from 'lodash';
 
 const renderDangerInput = (elements, error) => {
   elements.input.classList.add('is-invalid');
@@ -6,16 +7,18 @@ const renderDangerInput = (elements, error) => {
 };
 
 const renderFeeds = (state, elements, i18n) => {
+  elements.containerForFeeds.innerHTML = '';
+
   const cardBody = document.createElement('div');
   const titleForFeeds = document.createElement('h2');
-  const listForFeeds = document.createElement('ul');
   const divForTitle = document.createElement('div');
+  const listForFeeds = document.createElement('ul');
 
   cardBody.classList.add('card', 'border-0');
   divForTitle.classList.add('card-body');
   titleForFeeds.classList.add('card-title', 'h4');
-  listForFeeds.classList.add('list-group', 'border-0', 'rounded-0');
   titleForFeeds.textContent = i18n('title_feeds');
+  listForFeeds.classList.add('list-group', 'border-0', 'rounded-0');
 
   state.form.feeds.forEach((item) => {
     const liElement = document.createElement('li');
@@ -39,6 +42,8 @@ const renderFeeds = (state, elements, i18n) => {
 };
 
 const renderPosts = (state, elements, i18n) => {
+  elements.containerForPosts.innerHTML = '';
+
   const containerForPosts = document.createElement('div');
   const containerForTitle = document.createElement('div');
   const titleForPosts = document.createElement('h2');
@@ -50,16 +55,27 @@ const renderPosts = (state, elements, i18n) => {
   listForPosts.classList.add('list-group', 'border-0', 'rounded-0');
   titleForPosts.textContent = i18n('title_posts');
 
-  state.form.posts.flat(1).forEach(() => {
+  state.form.posts.forEach((item) => {
     const liElement = document.createElement('li');
     const linkForLi = document.createElement('a');
+    const buttonForLi = document.createElement('button');
 
     liElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     linkForLi.classList.add('fw-bold');
+    linkForLi.setAttribute('href', item.link);
+    linkForLi.textContent = item.title;
+    buttonForLi.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    buttonForLi.setAttribute('type', 'button');
+    buttonForLi.setAttribute('data-bs-toggle', 'modal');
+    buttonForLi.setAttribute('data-bs-target', '#modal');
+    buttonForLi.textContent = i18n('button_text');
+
+    liElement.append(linkForLi, buttonForLi);
+    listForPosts.append(liElement);
   });
 
   containerForTitle.append(titleForPosts);
-  containerForPosts.append(containerForTitle);
+  containerForPosts.append(containerForTitle, listForPosts);
   elements.containerForPosts.append(containerForPosts);
 };
 
@@ -72,6 +88,8 @@ export default (state, elements, i18n) => onChange(state, (path, error) => {
       break;
     case 'form.feeds':
       renderFeeds(state, elements, i18n);
+      break;
+    case 'form.posts':
       renderPosts(state, elements, i18n);
       break;
     default:

@@ -1,4 +1,4 @@
-run:
+start:
 	npx webpack serve
 install:
 	npm ci

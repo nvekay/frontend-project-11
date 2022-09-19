@@ -12,12 +12,14 @@ export default (data) => {
       title: feedTitle,
       description: feedDescription,
     };
+    const feedCollection = [feed];
+
     const items = [...doc.querySelectorAll('item')];
     const posts = items.map((item) => ({
       title: item.querySelector('title').innerHTML,
       description: item.querySelector('description').innerHTML,
       link: item.querySelector('link').innerHTML,
     }));
-    return { feed, posts };
+    return [feedCollection, posts];
   }
 };

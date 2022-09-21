@@ -19,6 +19,7 @@ export default (data) => {
       title: item.querySelector('title').innerHTML,
       description: item.querySelector('description').innerHTML,
       link: item.querySelector('link').innerHTML,
+      state: 'unread',
     }));
     return [feedCollection, posts];
   }

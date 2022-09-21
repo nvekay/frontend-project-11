@@ -5,6 +5,13 @@ const renderDangerInput = (elements, error) => {
   elements.feedback.textContent = error;
 };
 
+const renderSucsessInput = (elements, i18n) => {
+  elements.input.classList.remove('is-invalid');
+  elements.feedback.classList.remove('text-danger');
+  elements.feedback.classList.add('text-success');
+  elements.feedback.textContent = i18n('rss_sucsess');
+};
+
 const renderFeeds = (state, elements, i18n) => {
   elements.containerForFeeds.innerHTML = '';
 
@@ -60,7 +67,8 @@ const renderPosts = (state, elements, i18n) => {
     const btn = document.createElement('button');
 
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    link.classList.add('fw-bold');
+    const classList = item.state === 'unread' ? 'fw-bold' : 'fw-normal';
+    link.className = classList;
     link.setAttribute('href', item.link);
     link.textContent = item.title;
     link.setAttribute('data-id', item.id);
@@ -82,7 +90,27 @@ const renderPosts = (state, elements, i18n) => {
   elements.containerForPosts.append(containerForPosts);
 };
 
+const renderModal = (state, elements) => {
+  const link = document.querySelector(`[data-id="${state.form.modal.id}"]`);
+
+  const post = state.form.posts.find((item) => item.id === state.form.modal.id);
+  // const className = post.status === 'unread' ? 'fw-bold' : 'fw-normal';
+
+  link.classList.replace('fw-bold', 'fw-normal');
+  const modalDiv = elements.modal;
+
+  const modalTitle = modalDiv.querySelector('.modal-title');
+  modalTitle.textContent = post.title;
+
+  const modalDescription = modalDiv.querySelector('.modal-body');
+  modalDescription.textContent = post.description;
+
+  const modalLink = modalDiv.querySelector('.full-article');
+  modalLink.setAttribute('href', post.link);
+};
+
 export default (state, elements, i18n) => onChange(state, (path, error) => {
+  console.log(path);
   switch (path) {
     case 'form.errors':
       renderDangerInput(elements, error);
@@ -92,6 +120,12 @@ export default (state, elements, i18n) => onChange(state, (path, error) => {
       break;
     case 'form.posts':
       renderPosts(state, elements, i18n);
+      break;
+    case 'form.modal.id':
+      renderModal(state, elements, i18n);
+      break;
+    case 'form.processState':
+      renderSucsessInput(elements, i18n);
       break;
     default:
       break;

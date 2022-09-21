@@ -19,5 +19,6 @@ export default {
     title_feeds: 'Фиды',
     title_posts: 'Посты',
     button_text: 'Просмотр',
+    rss_sucsess: 'RSS успешно загружен',
   },
 };

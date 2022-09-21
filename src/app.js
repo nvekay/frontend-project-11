@@ -19,9 +19,11 @@ export default () => {
     const elements = {
       form: document.querySelector('#add-url'),
       input: document.querySelector('#url-input'),
+      modal: document.querySelector('#modal'),
       feedback: document.querySelector('.feedback'),
       containerForFeeds: document.querySelector('.feeds'),
       containerForPosts: document.querySelector('.posts'),
+      cardBorder: document.querySelector('.card'),
     };
 
     const state = {
@@ -32,6 +34,9 @@ export default () => {
         posts: [],
         feeds: [],
         errors: {},
+        modal: {
+          id: null,
+        },
       },
     };
 
@@ -67,19 +72,26 @@ export default () => {
                   watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
                   watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
                   watchedState.form.urlContainer.push(watchedState.form.url);
+                  watchedState.form.processState = 'finished';
                 } catch (error) {
-                  makeWatchedState.form.errors = i18n('parsing_error');
+                  watchedState.form.errors = i18n('parsing_error');
                 }
               }
             })
             .catch((err) => {
-              makeWatchedState.form.errors = i18n(err.code);
+              watchedState.form.errors = i18n(err.code);
             });
         })
         .catch((err) => {
-          makeWatchedState.form.errors = err;
+          watchedState.form.errors = err;
         });
-      console.log(updatePosts(watchedState));
+      updatePosts(watchedState);
+    });
+
+    elements.containerForPosts.addEventListener('click', (e) => {
+      watchedState.form.modal.id = e.target.dataset.id;
+      const post = watchedState.form.posts.find((item) => item.id === e.target.dataset.id);
+      post.state = 'read';
     });
   })
     .catch((err) => console.error(err));

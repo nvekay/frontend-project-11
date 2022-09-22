@@ -1,11 +1,10 @@
-import axios from 'axios';
 import i18next from 'i18next';
 import { differenceBy } from 'lodash';
 import makeWatchedState from './view.js';
 import ru from './locales/ru.js';
 import validate from './utils/validate.js';
 import domParser from './utils/domParser.js';
-import normalaizeData, { getDataFromProxy } from './utils/utils.js';
+import { normalaizeData, getResponse } from './utils/utils.js';
 
 export default () => {
   const i18nextInstance = i18next.createInstance();
@@ -28,7 +27,6 @@ export default () => {
 
     const state = {
       form: {
-        processState: 'filling',
         url: '',
         urlContainer: [],
         posts: [],
@@ -43,7 +41,7 @@ export default () => {
     const watchedState = makeWatchedState(state, elements, i18n);
 
     const updatePosts = (observerState) => {
-      const promises = observerState.form.urlContainer.map((link) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(link)}`)
+      const promises = observerState.form.urlContainer.map((link) => getResponse(link)
         .then((response) => {
           const [, posts] = domParser(response.data.contents);
           const newPosts = differenceBy(posts, observerState.form.posts, 'link');
@@ -58,7 +56,10 @@ export default () => {
       const formData = new FormData(e.target);
       const url = formData.get('url');
       validate({ url }, watchedState, i18n)
-        .then(({ url: validUrl }) => getDataFromProxy(validUrl))
+        .then(({ url: validUrl }) => {
+          watchedState.form.url = validUrl;
+          return getResponse(validUrl);
+        })
         .then((response) => {
           const dom = domParser(response.data.contents);
           const [feed, posts] = dom;
@@ -66,7 +67,7 @@ export default () => {
           const normalizePosts = normalaizeData(posts);
           watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
           watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
-          watchedState.form.urlContainer.push(url);
+          watchedState.form.urlContainer.push(watchedState.form.url);
           watchedState.form.processState = 'finished';
           elements.input.value = '';
           elements.input.focus();

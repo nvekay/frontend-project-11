@@ -1,20 +1,18 @@
 import { uniqueId } from 'lodash';
 import axios from 'axios';
 
-export default (data) => {
-  const normalaizeData = data.map((content) => {
+export const normalaizeData = (data) => {
+  const normalaize = data.map((content) => {
     const id = uniqueId();
     const newId = {
       id,
     };
     return { ...content, ...newId };
   });
-  return normalaizeData;
+  return normalaize;
 };
 
-const proxy = 'https://allorigins.hexlet.app/get';
-
-export const getDataFromProxy = (url) => axios.get(proxy, {
+export const getResponse = (url) => axios.get('https://allorigins.hexlet.app/get', {
   params: {
     disableCache: true,
     url,

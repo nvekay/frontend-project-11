@@ -55,9 +55,11 @@ export default () => {
 
     elements.form.addEventListener('submit', (e) => {
       e.preventDefault();
-      validate({ url: elements.input.value }, watchedState, i18n)
+      const formData = new FormData(e.target);
+      const url = formData.get('url');
+      validate({ url }, watchedState, i18n)
         .then(() => {
-          watchedState.form.url = elements.input.value;
+          watchedState.form.url = url;
           axios
             .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.form.url)}`)
             .then((response) => {

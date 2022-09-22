@@ -62,21 +62,17 @@ export default () => {
           axios
             .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(validUrl)}`)
             .then((response) => {
-              if (response.headers['content-type'] !== 'application/json; charset=utf-8') {
-                watchedState.form.errors = i18n('invalid_rss');
-              } else {
-                try {
-                  const dom = domParser(response.data.contents);
-                  const [feed, posts] = dom;
-                  const normalizeFeed = normalaizeData(feed);
-                  const normalizePosts = normalaizeData(posts);
-                  watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
-                  watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
-                  watchedState.form.urlContainer.push(validUrl);
-                  watchedState.form.processState = 'finished';
-                } catch (error) {
-                  watchedState.form.errors = i18n('parsing_error');
-                }
+              try {
+                const dom = domParser(response.data.contents);
+                const [feed, posts] = dom;
+                const normalizeFeed = normalaizeData(feed);
+                const normalizePosts = normalaizeData(posts);
+                watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
+                watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
+                watchedState.form.urlContainer.push(validUrl);
+                watchedState.form.processState = 'finished';
+              } catch (error) {
+                watchedState.form.errors = i18n('parsing_error');
               }
             })
             .catch((err) => {

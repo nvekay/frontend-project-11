@@ -5,7 +5,7 @@ import makeWatchedState from './view.js';
 import ru from './locales/ru.js';
 import validate from './utils/validate.js';
 import domParser from './utils/domParser.js';
-import normalaizeData from './utils/utils.js';
+import normalaizeData, { getDataFromProxy } from './utils/utils.js';
 
 export default () => {
   const i18nextInstance = i18next.createInstance();
@@ -59,33 +59,40 @@ export default () => {
       const url = formData.get('url');
       validate({ url }, watchedState, i18n)
         .then(({ url: validUrl }) => {
-          axios
-            .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(validUrl)}`)
-            .then((response) => {
-              try {
-                const dom = domParser(response.data.contents);
-                const [feed, posts] = dom;
-                const normalizeFeed = normalaizeData(feed);
-                const normalizePosts = normalaizeData(posts);
-                watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
-                watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
-                watchedState.form.urlContainer.push(validUrl);
-                watchedState.form.processState = 'finished';
-                elements.input.value = '';
-                elements.input.focus();
-              } catch (error) {
-                watchedState.form.errors = i18n('parsing_error');
-              }
-            })
-            .catch((err) => {
-              watchedState.form.errors = i18n(err.code);
-            });
+          watchedState.form.url = validUrl;
+          return getDataFromProxy(validUrl);
         })
-        .catch((err) => {
-          watchedState.form.errors = err.errors.map((errors) => i18n(errors.key));
+        .then((response) => {
+          const dom = domParser(response.data.contents);
+          const [feed, posts] = dom;
+          const normalizeFeed = normalaizeData(feed);
+          const normalizePosts = normalaizeData(posts);
+          watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
+          watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
+          watchedState.form.urlContainer.push(url);
+          watchedState.form.processState = 'finished';
+          elements.input.value = '';
+          elements.input.focus();
+        })
+        .catch((error) => {
+          console.log(error);
+          switch (error.name) {
+            case 'ValidationError':
+              watchedState.form.errors = error.errors.map((err) => i18n(err.key));
+              break;
+            case 'AxiosError':
+              watchedState.form.errors = i18n('err_network');
+              break;
+            case 'ParsingError':
+              watchedState.form.errors = i18n('parsing_error');
+              break;
+            default:
+              throw new Error(`${error}`);
+          }
         });
-      updatePosts(watchedState);
     });
+
+    updatePosts(watchedState);
 
     elements.containerForPosts.addEventListener('click', (e) => {
       watchedState.form.modal.id = e.target.dataset.id;

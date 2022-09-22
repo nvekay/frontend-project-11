@@ -94,7 +94,6 @@ const renderModal = (state, elements) => {
   const link = document.querySelector(`[data-id="${state.form.modal.id}"]`);
 
   const post = state.form.posts.find((item) => item.id === state.form.modal.id);
-  // const className = post.status === 'unread' ? 'fw-bold' : 'fw-normal';
 
   link.classList.replace('fw-bold', 'fw-normal');
   const modalDiv = elements.modal;

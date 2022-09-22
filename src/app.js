@@ -62,7 +62,7 @@ export default () => {
           axios
             .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(validUrl)}`)
             .then((response) => {
-              if (response.data.status.content_type !== 'application/rss+xml; charset=utf-8') {
+              if (response.headers['content-type'] !== 'application/json; charset=utf-8') {
                 watchedState.form.errors = i18n('invalid_rss');
               } else {
                 try {
@@ -72,7 +72,7 @@ export default () => {
                   const normalizePosts = normalaizeData(posts);
                   watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
                   watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
-                  watchedState.form.urlContainer.push(watchedState.form.url);
+                  watchedState.form.urlContainer.push(validUrl);
                   watchedState.form.processState = 'finished';
                 } catch (error) {
                   watchedState.form.errors = i18n('parsing_error');

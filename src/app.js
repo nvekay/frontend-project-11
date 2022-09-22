@@ -71,6 +71,8 @@ export default () => {
                 watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
                 watchedState.form.urlContainer.push(validUrl);
                 watchedState.form.processState = 'finished';
+                elements.input.value = '';
+                elements.input.focus();
               } catch (error) {
                 watchedState.form.errors = i18n('parsing_error');
               }

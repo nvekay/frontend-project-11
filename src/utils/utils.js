@@ -19,12 +19,4 @@ export const getDataFromProxy = (url) => axios.get(proxy, {
     disableCache: true,
     url,
   },
-}).then((response) => {
-  console.log(response.headers['content-type']);
-  if (response.headers['content-type'] !== 'application/json; charset=utf-8') {
-    const errorMessage = { name: 'AxiosError' };
-    throw errorMessage;
-  } else {
-    return response;
-  }
 });

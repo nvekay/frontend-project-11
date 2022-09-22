@@ -58,10 +58,9 @@ export default () => {
       const formData = new FormData(e.target);
       const url = formData.get('url');
       validate({ url }, watchedState, i18n)
-        .then(() => {
-          watchedState.form.url = url;
+        .then(({ url: validUrl }) => {
           axios
-            .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(watchedState.form.url)}`)
+            .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(validUrl)}`)
             .then((response) => {
               if (response.data.status.content_type !== 'application/rss+xml; charset=utf-8') {
                 watchedState.form.errors = i18n('invalid_rss');
@@ -85,7 +84,7 @@ export default () => {
             });
         })
         .catch((err) => {
-          watchedState.form.errors = err;
+          watchedState.form.errors = err.errors.map((errors) => i18n(errors.key));
         });
       updatePosts(watchedState);
     });

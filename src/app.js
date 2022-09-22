@@ -58,10 +58,7 @@ export default () => {
       const formData = new FormData(e.target);
       const url = formData.get('url');
       validate({ url }, watchedState, i18n)
-        .then(({ url: validUrl }) => {
-          watchedState.form.url = validUrl;
-          return getDataFromProxy(validUrl);
-        })
+        .then(({ url: validUrl }) => getDataFromProxy(validUrl))
         .then((response) => {
           const dom = domParser(response.data.contents);
           const [feed, posts] = dom;
@@ -84,7 +81,7 @@ export default () => {
               watchedState.form.errors = i18n('err_network');
               break;
             case 'ParsingError':
-              watchedState.form.errors = i18n('parsing_error');
+              watchedState.form.errors = i18n('invalid_rss');
               break;
             default:
               throw new Error(`${error}`);

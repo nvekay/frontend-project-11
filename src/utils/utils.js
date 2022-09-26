@@ -12,4 +12,4 @@ export const normalaizeData = (data) => {
   return normalaize;
 };
 
-export const getResponse = (url) => axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`);
+export const getResponse = (url) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${url}`);

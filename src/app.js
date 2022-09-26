@@ -23,9 +23,13 @@ export default () => {
       containerForFeeds: document.querySelector('.feeds'),
       containerForPosts: document.querySelector('.posts'),
       cardBorder: document.querySelector('.card'),
+      button: document.querySelector('#rss-btn'),
     };
 
     const state = {
+      processState: {
+        state: 'filling',
+      },
       form: {
         url: '',
         urlContainer: [],
@@ -53,14 +57,16 @@ export default () => {
 
     elements.form.addEventListener('submit', (e) => {
       e.preventDefault();
+      watchedState.processState.state = 'loading';
       const formData = new FormData(e.target);
       const url = formData.get('url');
-      validate({ url }, watchedState, i18n)
+      validate({ url }, watchedState)
         .then(({ url: validUrl }) => {
           watchedState.form.url = validUrl;
           return getResponse(validUrl);
         })
         .then((response) => {
+          watchedState.processState.state = 'finished';
           const dom = domParser(response.data.contents);
           const [feed, posts] = dom;
           const normalizeFeed = normalaizeData(feed);
@@ -68,12 +74,11 @@ export default () => {
           watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
           watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
           watchedState.form.urlContainer.push(watchedState.form.url);
-          watchedState.form.processState = 'finished';
           elements.input.value = '';
           elements.input.focus();
         })
         .catch((error) => {
-          console.log(error);
+          watchedState.processState.state = 'error';
           switch (error.name) {
             case 'ValidationError':
               watchedState.form.errors = error.errors.map((err) => i18n(err.key));

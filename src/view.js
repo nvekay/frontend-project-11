@@ -1,15 +1,59 @@
 import onChange from 'on-change';
 
+const renderFillingProcess = (elements) => {
+  elements.button.disabled = false;
+  elements.input.removeAttribute('readonly', '');
+  elements.feedback.innerHTML = '';
+  elements.feedback.classList.remove('text-success');
+  elements.input.classList.remove('is-invalid');
+  elements.feedback.classList.remove('text-danger');
+};
+
+const renderLoadingProcess = (elements, i18n) => {
+  elements.button.disabled = true;
+  elements.input.setAttribute('readonly', '');
+  elements.feedback.classList.remove('text-success');
+  elements.input.classList.remove('is-invalid');
+  elements.feedback.classList.remove('text-danger');
+  elements.feedback.textContent = i18n('loading_process');
+};
+
 const renderDangerInput = (elements, error) => {
+  elements.feedback.innerHTML = '';
+  elements.feedback.classList.add('text-danger');
   elements.input.classList.add('is-invalid');
   elements.feedback.textContent = error;
 };
 
-const renderSucsessInput = (elements, i18n) => {
-  elements.input.classList.remove('is-invalid');
-  elements.feedback.classList.remove('text-danger');
+const renderError = (elements) => {
+  elements.button.disabled = false;
+  elements.input.removeAttribute('readonly', '');
+};
+
+const renderSuccessInput = (elements, i18n) => {
+  elements.button.disabled = false;
+  elements.input.removeAttribute('readonly', '');
   elements.feedback.classList.add('text-success');
-  elements.feedback.textContent = i18n('rss_sucsess');
+  elements.feedback.textContent = i18n('rss_success');
+};
+
+const handleProcessState = (elements, processState, i18n) => {
+  switch (processState) {
+    case 'filling':
+      renderFillingProcess(elements);
+      break;
+    case 'loading':
+      renderLoadingProcess(elements, i18n);
+      break;
+    case 'finished':
+      renderSuccessInput(elements, i18n);
+      break;
+    case 'error':
+      renderError(elements);
+      break;
+    default:
+      throw new Error(`Unknown process state: ${processState}`);
+  }
 };
 
 const renderFeeds = (state, elements, i18n) => {
@@ -108,11 +152,12 @@ const renderModal = (state, elements) => {
   modalLink.setAttribute('href', post.link);
 };
 
-export default (state, elements, i18n) => onChange(state, (path, error) => {
+export default (state, elements, i18n) => onChange(state, (path, value) => {
   console.log(path);
+  console.log(value);
   switch (path) {
     case 'form.errors':
-      renderDangerInput(elements, error);
+      renderDangerInput(elements, value);
       break;
     case 'form.feeds':
       renderFeeds(state, elements, i18n);
@@ -123,8 +168,8 @@ export default (state, elements, i18n) => onChange(state, (path, error) => {
     case 'form.modal.id':
       renderModal(state, elements, i18n);
       break;
-    case 'form.processState':
-      renderSucsessInput(elements, i18n);
+    case 'processState.state':
+      handleProcessState(elements, value, i18n);
       break;
     default:
       break;

@@ -3,8 +3,7 @@ export default (data, url) => {
   const doc = parser.parseFromString(data, 'text/xml');
   const errorNode = doc.querySelector('parsererror');
   if (errorNode) {
-    const errorMessage = { name: 'ParsingError' };
-    throw errorMessage;
+    throw new Error('ParsingError');
   } else {
     const feedTitle = doc.querySelector('title').innerHTML;
     const feedDescription = doc.querySelector('description').innerHTML;

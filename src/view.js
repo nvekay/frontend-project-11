@@ -113,7 +113,8 @@ const renderPosts = (state, elements, i18n) => {
     const btn = document.createElement('button');
 
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    link.classList.add('fw-bold');
+    const fontClass = state.viewedPotsIds.has(item.id) ? 'fw-normal' : 'fw-bold';
+    link.classList.add(fontClass);
     link.setAttribute('href', item.link);
     link.textContent = item.title;
     link.setAttribute('data-id', item.id);
@@ -135,22 +136,22 @@ const renderPosts = (state, elements, i18n) => {
   elements.containerForPosts.append(containerForPosts);
 };
 
-const renderModal = (state, elements) => {
-  const link = document.querySelector(`[data-id="${state.modal.id}"]`);
+const renderModal = (state, elements, id) => {
+  const link = document.querySelector(`[data-id="${id}"]`);
+  link.classList.remove('fw-bold');
+  link.classList.add('fw-normal');
 
-  const post = state.data.posts.find((item) => item.id === state.modal.id);
-
-  link.classList.replace('fw-bold', 'fw-normal');
+  const [findPost] = state.data.posts.filter((post) => post.id === id);
   const modalDiv = elements.modal;
 
   const modalTitle = modalDiv.querySelector('.modal-title');
-  modalTitle.textContent = post.title;
+  modalTitle.textContent = findPost.title;
 
   const modalDescription = modalDiv.querySelector('.modal-body');
-  modalDescription.textContent = post.description;
+  modalDescription.textContent = findPost.description;
 
   const modalLink = modalDiv.querySelector('.full-article');
-  modalLink.setAttribute('href', post.link);
+  modalLink.setAttribute('href', findPost.link);
 };
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {
@@ -164,8 +165,8 @@ export default (state, elements, i18n) => onChange(state, (path, value) => {
     case 'data.posts':
       renderPosts(state, elements, i18n);
       break;
-    case 'modal.id':
-      renderModal(state, elements, i18n);
+    case 'modalId':
+      renderModal(state, elements, value);
       break;
     case 'processState.state':
       handleProcessState(elements, value, i18n);

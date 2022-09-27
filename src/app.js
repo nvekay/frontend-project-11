@@ -35,9 +35,8 @@ export default () => {
         feeds: [],
       },
       errors: {},
-      modal: {
-        id: null,
-      },
+      viewedPotsIds: new Set(),
+      modalId: null,
     };
 
     const watchedState = makeWatchedState(state, elements, i18n);
@@ -79,7 +78,7 @@ export default () => {
             case 'AxiosError':
               watchedState.errors = i18n('err_network');
               break;
-            case 'ParsingError':
+            case 'Error':
               watchedState.errors = i18n('invalid_rss');
               break;
             default:
@@ -91,7 +90,9 @@ export default () => {
     updatePosts(watchedState);
 
     elements.containerForPosts.addEventListener('click', (e) => {
-      watchedState.modal.id = e.target.dataset.id;
+      const { id } = e.target.dataset;
+      watchedState.modalId = id;
+      watchedState.viewedPotsIds.add(id);
     });
   })
     .catch((err) => console.error(err));

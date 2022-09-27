@@ -30,27 +30,26 @@ export default () => {
       processState: {
         state: 'filling',
       },
-      form: {
-        url: '',
-        urlContainer: [],
+      data: {
         posts: [],
         feeds: [],
-        errors: {},
-        modal: {
-          id: null,
-        },
+      },
+      errors: {},
+      modal: {
+        id: null,
       },
     };
 
     const watchedState = makeWatchedState(state, elements, i18n);
 
     const updatePosts = (observerState) => {
-      const promises = observerState.form.urlContainer.map((link) => getResponse(link)
+      const links = watchedState.data.feeds.map((feed) => feed.link);
+      const promises = links.map((link) => getResponse(link)
         .then((response) => {
           const [, posts] = domParser(response.data.contents);
-          const newPosts = differenceBy(posts, observerState.form.posts, 'link');
+          const newPosts = differenceBy(posts, observerState.data.posts, 'link');
           const normalizePosts = normalaizeData(newPosts);
-          observerState.form.posts = [...normalizePosts, ...observerState.form.posts];
+          observerState.data.posts = [...normalizePosts, ...observerState.data.posts];
         }));
       Promise.all(promises).finally(() => setTimeout(updatePosts, 5000, watchedState));
     };
@@ -61,33 +60,27 @@ export default () => {
       const formData = new FormData(e.target);
       const url = formData.get('url');
       validate({ url }, watchedState)
-        .then(({ url: validUrl }) => {
-          watchedState.form.url = validUrl;
-          return getResponse(validUrl);
-        })
+        .then(({ url: validUrl }) => getResponse(validUrl))
         .then((response) => {
           watchedState.processState.state = 'finished';
-          const dom = domParser(response.data.contents);
+          const dom = domParser(response.data.contents, url);
           const [feed, posts] = dom;
           const normalizeFeed = normalaizeData(feed);
           const normalizePosts = normalaizeData(posts);
-          watchedState.form.feeds = [...normalizeFeed, ...watchedState.form.feeds];
-          watchedState.form.posts = [...normalizePosts, ...watchedState.form.posts];
-          watchedState.form.urlContainer.push(watchedState.form.url);
-          elements.input.value = '';
-          elements.input.focus();
+          watchedState.data.feeds = [...normalizeFeed, ...watchedState.data.feeds];
+          watchedState.data.posts = [...normalizePosts, ...watchedState.data.posts];
         })
         .catch((error) => {
           watchedState.processState.state = 'error';
           switch (error.name) {
             case 'ValidationError':
-              watchedState.form.errors = error.errors.map((err) => i18n(err.key));
+              watchedState.errors = error.errors.map((err) => i18n(err.key));
               break;
             case 'AxiosError':
-              watchedState.form.errors = i18n('err_network');
+              watchedState.errors = i18n('err_network');
               break;
             case 'ParsingError':
-              watchedState.form.errors = i18n('invalid_rss');
+              watchedState.errors = i18n('invalid_rss');
               break;
             default:
               throw new Error(`${error}`);
@@ -98,9 +91,7 @@ export default () => {
     updatePosts(watchedState);
 
     elements.containerForPosts.addEventListener('click', (e) => {
-      watchedState.form.modal.id = e.target.dataset.id;
-      const post = watchedState.form.posts.find((item) => item.id === e.target.dataset.id);
-      post.state = 'read';
+      watchedState.modal.id = e.target.dataset.id;
     });
   })
     .catch((err) => console.error(err));

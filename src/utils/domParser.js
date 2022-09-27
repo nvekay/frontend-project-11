@@ -1,4 +1,4 @@
-export default (data) => {
+export default (data, url) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(data, 'text/xml');
   const errorNode = doc.querySelector('parsererror');
@@ -11,6 +11,7 @@ export default (data) => {
     const feed = {
       title: feedTitle,
       description: feedDescription,
+      link: url,
     };
     const feedCollection = [feed];
 

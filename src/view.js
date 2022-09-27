@@ -35,6 +35,8 @@ const renderSuccessInput = (elements, i18n) => {
   elements.input.removeAttribute('readonly', '');
   elements.feedback.classList.add('text-success');
   elements.feedback.textContent = i18n('rss_success');
+  elements.input.value = '';
+  elements.input.focus();
 };
 
 const handleProcessState = (elements, processState, i18n) => {
@@ -70,7 +72,7 @@ const renderFeeds = (state, elements, i18n) => {
   titleForFeeds.textContent = i18n('title_feeds');
   listForFeeds.classList.add('list-group', 'border-0', 'rounded-0');
 
-  state.form.feeds.forEach((item) => {
+  state.data.feeds.forEach((item) => {
     const liElement = document.createElement('li');
     const titleForLiElement = document.createElement('h3');
     const textContainer = document.createElement('p');
@@ -105,14 +107,13 @@ const renderPosts = (state, elements, i18n) => {
   ul.classList.add('list-group', 'border-0', 'rounded-0');
   titleForPosts.textContent = i18n('title_posts');
 
-  state.form.posts.forEach((item) => {
+  state.data.posts.forEach((item) => {
     const li = document.createElement('li');
     const link = document.createElement('a');
     const btn = document.createElement('button');
 
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-    const classList = item.state === 'unread' ? 'fw-bold' : 'fw-normal';
-    link.className = classList;
+    link.classList.add('fw-bold');
     link.setAttribute('href', item.link);
     link.textContent = item.title;
     link.setAttribute('data-id', item.id);
@@ -135,9 +136,9 @@ const renderPosts = (state, elements, i18n) => {
 };
 
 const renderModal = (state, elements) => {
-  const link = document.querySelector(`[data-id="${state.form.modal.id}"]`);
+  const link = document.querySelector(`[data-id="${state.modal.id}"]`);
 
-  const post = state.form.posts.find((item) => item.id === state.form.modal.id);
+  const post = state.data.posts.find((item) => item.id === state.modal.id);
 
   link.classList.replace('fw-bold', 'fw-normal');
   const modalDiv = elements.modal;
@@ -153,19 +154,17 @@ const renderModal = (state, elements) => {
 };
 
 export default (state, elements, i18n) => onChange(state, (path, value) => {
-  console.log(path);
-  console.log(value);
   switch (path) {
-    case 'form.errors':
+    case 'errors':
       renderDangerInput(elements, value);
       break;
-    case 'form.feeds':
+    case 'data.feeds':
       renderFeeds(state, elements, i18n);
       break;
-    case 'form.posts':
+    case 'data.posts':
       renderPosts(state, elements, i18n);
       break;
-    case 'form.modal.id':
+    case 'modal.id':
       renderModal(state, elements, i18n);
       break;
     case 'processState.state':
